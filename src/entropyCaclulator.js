@@ -1,5 +1,3 @@
-import Minesweeper from "./minesweeper";
-
 const entropyCalculator = (minesweeper) => {
 	if (!minesweeper || !minesweeper?.board) {
 		throw new Error("Invalid Minesweeper instance");

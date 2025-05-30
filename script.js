@@ -2,11 +2,8 @@ import Minesweeper from "./minesweeper.js";
 
 document.addEventListener('DOMContentLoaded', () => {
   const gameBoard = document.getElementById('game-board');
-  const minesCount = document.getElementById('mines-count');
   const resetButton = document.getElementById('reset-button');
-  const settingsButton = document.getElementById('settings-button');
   const settingsModal = document.getElementById('settings-modal');
-  const closeButton = document.querySelector('.close');
   const settingsForm = document.getElementById('settings-form');
   
   let rows = 10;
@@ -19,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     minesweeper = Minesweeper;
     minesweeper.init(rows, cols, mines);
     renderBoard();
-    updateMinesCount();
   }
 
   function renderBoard() {
@@ -75,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isFlagged = minesweeper.flagCell(row, col);
     renderCell(row, col);
-    updateMinesCount();
   }
 
   function refreshBoard() {
@@ -118,30 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function updateMinesCount() {
-    minesCount.textContent = `Mines: ${minesweeper.getRemainingMines()}`;
-  }
-
-  settingsButton.addEventListener('click', () => {
-    settingsModal.style.display = 'flex';
-  });
-
-  closeButton.addEventListener('click', () => {
-    settingsModal.style.display = 'none';
-  });
-
-  window.addEventListener('click', (event) => {
-    if (event.target === settingsModal) {
-      settingsModal.style.display = 'none';
-    }
-  });
-
   settingsForm.addEventListener('submit', (event) => {
     event.preventDefault();
     rows = parseInt(document.getElementById('rows').value);
     cols = parseInt(document.getElementById('cols').value);
     mines = parseInt(document.getElementById('mines').value);
-    settingsModal.style.display = 'none';
     initGame();
   });
 

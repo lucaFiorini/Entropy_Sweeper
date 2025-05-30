@@ -1,187 +1,176 @@
 :root {
-  --background-color: #f0f0f0;
-  --text-color: #333;
-  --cell-color: #ccc;
-  --cell-revealed-color: #eee;
-  --cell-mine-color: #ff0000;
-  --cell-flagged-color: #ffcc00;
-  --button-color: #4CAF50;
-  --button-hover-color: #45a049;
-  --reset-button-color: #f44336;
-  --reset-button-hover-color: #d32f2f;
-  --settings-button-color: #2196F3;
-  --settings-button-hover-color: #0b7dda;
+	--background-color: #f0f0f0;
+	--text-color: #333;
+	--cell-color: #ccc;
+	--cell-revealed-color: #eee;
+	--cell-mine-color: #ff0000;
+	--cell-flagged-color: #ffcc00;
+	--button-color: #4CAF50;
+	--button-hover-color: #45a049;
+	--reset-button-color: #f44336;
+	--reset-button-hover-color: #d32f2f;
+	--settings-button-color: #2196F3;
+	--settings-button-hover-color: #0b7dda;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
+	font-family: Arial, sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 .game-container {
-  text-align: center;
+	text-align: center;
+}
+.sidebar{
+	display: flex;
+	position:absolute;
+	left: 0px;
+	height: 100%;
+	width: 20%;
+
+	border: var(--cell-color) solid 2px;
+	margin:0px;
+}
+.sidebar.left{
+	text-align: left;
 }
 
 .game-info {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	margin: 20px 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 #game-board {
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-gap: 2px;
-  justify-content: center;
+	display: grid;
+	grid-template-columns: repeat(10, 30px);
+	grid-gap: 2px;
+	justify-content: center;
 }
 
 .cell {
-  width: 30px;
-  height: 30px;
-  border-radius: 10%;
-  background-color: var(--cell-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
+	width: 30px;
+	height: 30px;
+	border-radius: 10%;
+	background-color: var(--cell-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	user-select: none;
 }
 
 .cell.revealed {
-  background-color: var(--cell-revealed-color);
-  animation: revealAnimation 0.2s ease-in-out;
+	background-color: var(--cell-revealed-color);
+	animation: revealAnimation 0.2s ease-in-out;
 }
 
 @keyframes revealAnimation {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+	0% {
+	transform: scale(0.8);
+	opacity: 0.5;
+	}
+	100% {
+	transform: scale(1);
+	opacity: 1;
+	}
 }
 
 .cell.mine {
-  background-color: var(--cell-mine-color);
+	background-color: var(--cell-mine-color);
 }
 
 .cell.flagged {
-  background-color: var(--cell-flagged-color);
+	background-color: var(--cell-flagged-color);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background-color: #333;
-    --text-color: #fff;
-    --cell-color: #666;
-    --cell-revealed-color: #444;
-    --cell-mine-color: #ff6666;
-    --cell-flagged-color: #ffcc66;
-  }
-}
-
-/* Modal styling */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: var(--cell-revealed-color);
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  color: var(--text-color);
+	:root {
+	--background-color: #333;
+	--text-color: #fff;
+	--cell-color: #666;
+	--cell-revealed-color: #444;
+	--cell-mine-color: #ff6666;
+	--cell-flagged-color: #ffcc66;
+	}
 }
 
 .close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .close:hover {
-  color: var(--text-color);
+	color: var(--text-color);
 }
 
 .modal-content h2 {
-  text-align: center;
-  margin-bottom: 20px;
+	text-align: center;
+	margin-bottom: 20px;
 }
 
 .modal-content form {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 .modal-content label {
-  margin-top: 10px;
-  font-weight: bold;
+	margin-top: 10px;
+	font-weight: bold;
 }
 
 .modal-content input {
-  margin-top: 5px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+	margin-top: 5px;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 16px;
 }
 
 button {
-  padding: 10px 20px;
-  margin: 0 5px;
-  cursor: pointer;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  background-color: var(--button-color);
-  color: white;
-  transition: background-color 0.3s;
+	padding: 10px 20px;
+	margin: 0 5px;
+	cursor: pointer;
+	font-size: 16px;
+	border: none;
+	border-radius: 5px;
+	background-color: var(--button-color);
+	color: white;
+	transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: var(--button-hover-color);
+	background-color: var(--button-hover-color);
 }
 
 #reset-button {
-  background-color: var(--reset-button-color);
+	background-color: var(--reset-button-color);
 }
 
 #reset-button:hover {
-  background-color: var(--reset-button-hover-color);
+	background-color: var(--reset-button-hover-color);
 }
 
 #settings-button {
-  background-color: var(--settings-button-color);
+	background-color: var(--settings-button-color);
 }
 
 #settings-button:hover {
-  background-color: var(--settings-button-hover-color);
+	background-color: var(--settings-button-hover-color);
 }
 
 #mines-count {
-  margin: 0 20px;
-  font-size: 16px;
-  font-weight: bold;
+	margin: 0 20px;
+	font-size: 16px;
+	font-weight: bold;
 }

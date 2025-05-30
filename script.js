@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let minesweeper;
 
   function initGame() {
-    minesweeper = Minesweeper;
-    minesweeper.init(rows, cols, mines);
+    minesweeper = Minesweeper(rows, cols, mines);
     renderBoard();
   }
 

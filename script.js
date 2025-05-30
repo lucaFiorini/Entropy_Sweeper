@@ -1,21 +1,29 @@
+/** @format */
+
 import Minesweeper from "./src/minesweeper.js";
+import entropyCalculator from "./src/entropyCaclulator.js";
+import SelfPlay from "./src/selfPlay.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-  const gameBoard = document.getElementById('game-board');
-  const resetButton = document.getElementById('reset-button');
-  const settingsModal = document.getElementById('settings-modal');
-  const settingsForm = document.getElementById('settings-form');
-  
-  let rows = 10;
-  let cols = 10;
-  let mines = 10;
-  let is_first_reveal = true;
-  let minesweeper;
+document.addEventListener("DOMContentLoaded", () => {
+	const gameBoard = document.getElementById("game-board");
+	const resetButton = document.getElementById("reset-button");
+	const settingsForm = document.getElementById("settings-form");
 
-  function initGame() {
-    minesweeper = new Minesweeper(rows, cols, mines);
-    renderBoard();
-  }
+	let rows = 10;
+	let cols = 10;
+	let mines = 10;
+	let minesweeper;
+	let entropyCalculatorInstance;
+
+	function initGame() {
+		try {
+			minesweeper = new Minesweeper(rows, cols, mines);
+			entropyCalculatorInstance = new entropyCalculator(minesweeper);
+			renderBoard();
+		} catch (error) {
+			alert("Failed to initialize game: " + error.message);
+		}
+	}
 
 	function renderBoard() {
 		gameBoard.innerHTML = "";
@@ -45,19 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		const cell = minesweeper.getCell(row, col);
 		if (cell.isFlagged) return;
 
-		let result;
-
-		if (is_first_reveal) {
-			result = minesweeper.revealFirstCell(row, col);
-			is_first_reveal = false;
-		} else {
-			result = minesweeper.revealCell(row, col);
-		}
+		let result = minesweeper.revealCell(row, col);
 
 		if (result.mineHit) {
 			alert("Game Over!");
 			revealAllMines();
 		} else {
+			entropyCalculatorInstance.calculateChains();
+			entropyCalculatorInstance.printChains();
 			refreshBoard();
 		}
 	}
@@ -65,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	function handleCellRightClick(row, col) {
 		if (minesweeper.isGameOver()) return;
 
-    const cell = minesweeper.getCell(row, col);
-    if (cell.isRevealed) return;
+		const cell = minesweeper.getCell(row, col);
+		if (cell.isRevealed) return;
 
-    const isFlagged = minesweeper.flagCell(row, col);
-    renderCell(row, col);
-  }
+		minesweeper.flagCell(row, col);
+		renderCell(row, col);
+	}
 
 	function refreshBoard() {
 		for (let row = 0; row < rows; row++) {
@@ -101,24 +104,27 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-  function revealAllMines() {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        const cell = minesweeper.getCell(i, j);
-        if (cell.isMine) {
-          renderCell(i, j);
-        }
-      }
-    }
-  }
+	function revealAllMines() {
+		for (let i = 0; i < rows; i++) {
+			for (let j = 0; j < cols; j++) {
+				const cell = minesweeper.getCell(i, j);
+				if (cell.isMine) {
+					renderCell(i, j);
+				}
+			}
+		}
+	}
 
-  settingsForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    rows = parseInt(document.getElementById('rows').value);
-    cols = parseInt(document.getElementById('cols').value);
-    mines = parseInt(document.getElementById('mines').value);
-    initGame();
-  });
+	function doNextMove() {
+		SelfPlay(minesweeper);
+	}
+	settingsForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		rows = parseInt(document.getElementById("rows").value);
+		cols = parseInt(document.getElementById("cols").value);
+		mines = parseInt(document.getElementById("mines").value);
+		initGame();
+	});
 
 	resetButton.addEventListener("click", initGame);
 

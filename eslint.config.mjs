@@ -41,13 +41,13 @@ export default defineConfig([
 					useTabs: true,
 					tabWidth: 4,
 					bracketSameLine: true,
-					printWidth: 240,
+					printWidth: 120,
 					trailingComma: "none",
 					semi: true,
 					singleQuote: false,
 					arrowParens: "always",
 					endOfLine: "lf",
-					proseWrap: "preserve"
+					proseWrap: "always"
 				}
 			],
 
@@ -55,15 +55,8 @@ export default defineConfig([
 			"no-mixed-spaces-and-tabs": "error",
 			"no-unused-vars": "warn",
 			"no-console": "off",
-			"line-comment-position": ["off"]
-		}
-	},
-	{
-		files: ["tests/**/*.test.js"],
-		languageOptions: {
-			globals: {
-				...globals.jest
-			}
+			"line-comment-position": ["off"],
+			"linebreak-style": ["error", "unix"]
 		}
 	}
 ]);

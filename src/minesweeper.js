@@ -144,6 +144,7 @@ class Minesweeper {
 				}
 			}
 		}
+
 		return { mineHit: false, revealed };
 	}
 
@@ -164,7 +165,14 @@ class Minesweeper {
 				this.#calculateAdjacentMines();
 			}
 		}
-		return this.#_revealCell(row, col);
+
+		const result = this.#_revealCell(row, col);
+
+		if (this.getRemainingMines() <= 0) {
+			this.won = true;
+		}
+
+		return result;
 	}
 
 	boardToString() {
@@ -204,8 +212,16 @@ class Minesweeper {
 		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) {
 			return false;
 		}
-		return this.flagCell(this.board[row][col]);
+		const cell = this.board[row][col];
+		if (cell.isRevealed) return false;
+		cell.isFlagged = !cell.isFlagged;
+		if (cell.isFlagged) {
+			if (this.getRemainingMines() <= 0) {
+				this.won = true;
+			}
+		}
 	}
+
 	/**
 	 *
 	 * @param {number} row
@@ -235,10 +251,6 @@ class Minesweeper {
 
 	getSize() {
 		return { rows: this.rows, cols: this.cols };
-	}
-
-	isGameOver() {
-		return this.gameOver;
 	}
 }
 

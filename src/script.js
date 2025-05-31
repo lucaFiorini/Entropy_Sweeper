@@ -1,8 +1,8 @@
 /** @format */
 
-import Minesweeper from "./src/minesweeper.js";
-import entropyCalculator from "./src/entropyCaclulator.js";
-import SelfPlay from "./src/selfPlay.js";
+import Minesweeper from "./minesweeper.js";
+import entropyCalculator from "./entropyCaclulator.js";
+import SelfPlay from "./selfPlay.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	const gameBoard = document.getElementById("game-board");
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function handleCellClick(row, col) {
-		if (minesweeper.isGameOver()) return;
+		if (minesweeper.gameOver) return;
 
 		const cell = minesweeper.getCell(row, col);
 		if (cell.isFlagged) return;
@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			alert("Game Over!");
 			revealAllMines();
 		} else {
+			console.clear();
 			entropyCalculatorInstance.calculateChains();
 			entropyCalculatorInstance.printChains();
 			refreshBoard();
@@ -66,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function handleCellRightClick(row, col) {
-		if (minesweeper.isGameOver()) return;
+		if (minesweeper.gameOver) return;
 
 		const cell = minesweeper.getCell(row, col);
 		if (cell.isRevealed) return;

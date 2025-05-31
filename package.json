@@ -5,12 +5,20 @@
 	"scripts": {
 		"test": "jest",
 		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"build": "webpack --mode production",
+  		"start": "webpack serve --mode development --open"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.18.13",
+		"@babel/preset-env": "^7.18.10",
+		"babel-loader": "^8.2.5",
 		"eslint": "^9.27.0",
 		"eslint-config-prettier": "^10.1.5",
 		"eslint-plugin-prettier": "^5.4.1",
-		"prettier": "^3.5.3"
+		"prettier": "^3.5.3",
+		"webpack": "^5.99.9",
+		"webpack-cli": "^4.10.0",
+		"webpack-dev-server": "^4.15.2"
 	}
 }

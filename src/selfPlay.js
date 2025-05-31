@@ -1,6 +1,6 @@
 /** @format */
 
-import { Minesweeper, Cell } from "./minesweeper";
+import { Minesweeper, Cell } from "./minesweeper.js";
 
 class SelfPlay {
 	ms;

@@ -1,7 +1,7 @@
 /** @format */
 
 import Minesweeper from "./minesweeper.js";
-import entropyCalculator from "./entropyCaclulator.js";
+import entropyCalculator from "./entropy/entropyCalculator.js";
 import SelfPlay from "./selfPlay.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -86,7 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function renderCell(row, col) {
 		const cell = minesweeper.getCell(row, col);
-		const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+		const cellElement = document.querySelector(
+			`.cell[data-row="${row}"][data-col="${col}"]`
+		);
 
 		if (cell.isRevealed) {
 			cellElement.classList.add("revealed");
@@ -94,7 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				cellElement.classList.add("mine");
 				cellElement.textContent = "*";
 			} else {
-				cellElement.textContent = cell.adjacentMines > 0 ? cell.adjacentMines : "";
+				cellElement.textContent =
+					cell.adjacentMines > 0 ? cell.adjacentMines : "";
 			}
 		} else if (cell.isFlagged) {
 			cellElement.classList.add("flagged");

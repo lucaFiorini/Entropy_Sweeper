@@ -25,7 +25,11 @@ class SelfPlay {
 		let size = this.ms.getSize();
 		let adjacentCells = [];
 		for (let row2 = row - 1; row2 < size.rows && row2 < row + 1; row2++) {
-			for (let col2 = col - 1; col2 < size.cols && col2 < col + 1; col2++) {
+			for (
+				let col2 = col - 1;
+				col2 < size.cols && col2 < col + 1;
+				col2++
+			) {
 				if (row2 != row && col2 != col) {
 					adjacentCells.push(this.ms.getCell(row2, col2));
 				}
@@ -51,14 +55,21 @@ class SelfPlay {
 						else if (adjcent.isFlagged()) known_bomb_adjacents++;
 					});
 
-					if (cell.adjacentMines() == unknown_adjacents + known_bomb_adjacents) {
+					if (
+						cell.adjacentMines() ==
+						unknown_adjacents + known_bomb_adjacents
+					) {
 						adjacents.forEach((adjcent) => {
-							if (!adjcent.isFlagged()) this.ms.flagCell(adjcent.row, adjcent.col);
+							if (!adjcent.isFlagged())
+								this.ms.flagCell(adjcent.row, adjcent.col);
 						});
 					} else if (cell.adjacentMines() == known_bomb_adjacents) {
 						if (
 							!adjacents.every((adjacent) => {
-								if (!adjacent.isFlagged() && !adjacent.isRevealed()) {
+								if (
+									!adjacent.isFlagged() &&
+									!adjacent.isRevealed()
+								) {
 									this.ms.revealCell();
 									return false;
 								} else return true;

@@ -8,17 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
 	const gameBoard = document.getElementById("game-board");
 	const resetButton = document.getElementById("reset-button");
 	const settingsForm = document.getElementById("settings-form");
+	const nextMoveButton = document.getElementById("next-move-button");
 
 	let rows = 10;
 	let cols = 10;
 	let mines = 10;
 	let minesweeper;
 	let entropyCalculatorInstance;
+	let selfPlay;
 
 	function initGame() {
 		try {
 			minesweeper = new Minesweeper(rows, cols, mines);
 			entropyCalculatorInstance = new entropyCalculator(minesweeper);
+			selfPlay = new SelfPlay(minesweeper);
 			renderBoard();
 		} catch (error) {
 			alert("Failed to initialize game: " + error.message);
@@ -119,9 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	function doNextMove() {
-		SelfPlay(minesweeper);
-	}
 	settingsForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		rows = parseInt(document.getElementById("rows").value);
@@ -132,5 +132,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	resetButton.addEventListener("click", initGame);
 
+	function doNextMove() {
+		let move = selfPlay.nextMove();
+		console.log(move);
+		if(move !== undefined){
+			minesweeper.revealCell(move.row,move.col);
+		}
+		refreshBoard();
+	}
+
+	nextMoveButton.addEventListener("click",doNextMove);
 	initGame();
 });

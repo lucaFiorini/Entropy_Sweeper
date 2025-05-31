@@ -48,6 +48,16 @@ class Chain {
 		);
 		return this.hiddenNeighbors;
 	}
+
+	print(minesweeper) {
+		this.cells.forEach(({ row, col }) => {
+			const cell = minesweeper.getCell(row, col);
+			console.log(
+				`Row: ${row}, Col: ${col}, Adjacent Mines: ${cell.adjacentMines}`
+			);
+		});
+		console.log("Hidden neighbors:", this.hiddenNeighbors);
+	}
 }
 
 export default Chain;

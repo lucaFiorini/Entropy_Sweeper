@@ -2,7 +2,7 @@
 /** @format */
 
 import Minesweeper from "../minesweeper.js";
-import { countValidStates } from "./countValidStates.js";
+import countValidStates from "./countValidStates.js";
 import Chain from "../chains/Chain.js";
 
 class EntropyCalculator {

@@ -1,8 +1,8 @@
+const { stat } = require("fs");
 const path = require("path");
 module.exports = {
 	mode: "development",
 	entry: path.join(__dirname, "src", "script"),
-	watch: true,
 	output: {
 		path: path.join(__dirname, "dist"),
 		publicPath: "/dist/",
@@ -36,9 +36,10 @@ module.exports = {
 	},
 	devtool: "source-map",
 	devServer: {
-		contentBase: path.join(__dirname, "/dist/"),
-		inline: true,
 		host: "localhost",
-		port: 8080
+		port: process.env.port || 8080,
+		static: {
+			directory: __dirname, // Serve index.html from project root
+		},
 	}
 };

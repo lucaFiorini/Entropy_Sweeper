@@ -18,6 +18,8 @@ class Cell {
 		adjacentMines = 0,
 		adjacentCells = 8
 	) {
+		this.row = row;
+		this.col = col;
 		this.isMine = isMine;
 		this.isRevealed = isRevealed;
 		this.isFlagged = isFlagged;
@@ -128,7 +130,24 @@ class Minesweeper {
 		}
 	}
 
-	#_revealCell(row, col) {
+	revealCell(row, col) {
+		if (this.won || this.gameOver) return { mineHit: false, revealed: 0 };
+		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) {
+			return { mineHit: false, revealed: 0 };
+		}
+		const cell = this.board[row][col];
+		if (cell.isRevealed || cell.isFlagged) {
+			return { mineHit: false, revealed: 0 };
+		}
+		if (this.isFirstCellRevealed) {
+			this.isFirstCellRevealed = false;
+			while (cell.isMine) {
+				cell.isMine = false;
+				this.#placeMines(1);
+				this.#calculateAdjacentMines();
+			}
+		}
+
 		this.board[row][col].isRevealed = true;
 
 		for (let x = -1; x <= 1; x++) {
@@ -163,34 +182,11 @@ class Minesweeper {
 			}
 		}
 
-		return { mineHit: false, revealed };
-	}
-
-	revealCell(row, col) {
-		if (this.gameOver) return { mineHit: false, revealed: 0 };
-		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) {
-			return { mineHit: false, revealed: 0 };
-		}
-		const cell = this.board[row][col];
-		if (cell.isRevealed || cell.isFlagged) {
-			return { mineHit: false, revealed: 0 };
-		}
-		if (this.isFirstCellRevealed) {
-			this.isFirstCellRevealed = false;
-			while (cell.isMine) {
-				cell.isMine = false;
-				this.#placeMines(1);
-				this.#calculateAdjacentMines();
-			}
-		}
-
-		const result = this.#_revealCell(row, col);
-
 		if (this.getRemainingMines() <= 0) {
 			this.won = true;
 		}
 
-		return result;
+		return { mineHit: false, revealed };
 	}
 
 	boardToString() {

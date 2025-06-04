@@ -2,6 +2,7 @@
 	"dependencies": {
 		"logic-solver": "^2.0.1"
 	},
+	"type": "module",
 	"scripts": {
 		"test": "jest",
 		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",

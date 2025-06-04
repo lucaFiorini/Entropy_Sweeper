@@ -41,7 +41,19 @@ class SelfPlay {
 	 */
 	nextMove() {
 		let size = this.ms.getSize();
+		let entropy = 0;
 		let retval = undefined;
+
+		let calculator = new EntropyCalculator(this.ms);
+		calculator.calculateChains();
+
+		// Calculate probabilities for each chain (solveChainWithSAT returns all possible solutions for the chain) it does not return probabilities
+		let solutions = [];
+		for (let chain of calculator.chains) {
+			let chainSol = solveChainWithSAT(chain, this.ms);
+			entropy = chainSol.count > 0 ? Math.log2(chainSol.count) : 0;
+			solutions.push(...chainSol.solutions);
+		}
 
 		for (let col = 0; col < size.cols; col++) {
 			for (let row = 0; row < size.rows; row++) {
@@ -70,21 +82,18 @@ class SelfPlay {
 									row: adjacent.row,
 									col: adjacent.col
 								};
-								return false;
-							} else return true;
+								return {move: false, entropy};
+							} else return {move: true, entropy};
 						});
 					}
 				}
 			}
 		}
 		if (retval !== undefined) {
-			return retval;
+			return {move: retval, entropy};
 		}
 		// begin probabilistic solving
 		// If no deterministic move was found, we will use the entropy calculator to find the best next move
-		let calculator = new EntropyCalculator(this.ms);
-		calculator.calculateChains();
-
 		let probabilityMap = this.ms.board;
 
 		//get number of known cells
@@ -95,11 +104,6 @@ class SelfPlay {
 					knownCount++;
 				}
 			}
-		}
-		// Calculate probabilities for each chain (solveChainWithSAT returns all possible solutions for the chain) it does not return probabilities
-		let solutions = [];
-		for (let chain of calculator.chains) {
-			solutions.push(...solveChainWithSAT(chain, this.ms).solutions);
 		}
 		let exploredCells = Array.from({ length: size.rows }, () => Array.from({ length: size.cols }, () => ({ timesVisited: 0, timesBomb: 0 })));
 		for (let solution of solutions) {
@@ -174,7 +178,7 @@ class SelfPlay {
 					closestCell = cell;
 				}
 			}
-			return closestCell; // Return the cell with the lowest probability closest to the center
+			return {move: closestCell, entropy}; // Return the cell with the lowest probability closest to the center
 		}
 
 		// If no cell was found, return the closest cell to the center
@@ -196,9 +200,9 @@ class SelfPlay {
 				}
 			}
 			if (closestCell) {
-				return closestCell;
+				return {move: closestCell, entropy}; // Return the closest cell to the center
 			} else {
-				return undefined; // No valid move found
+				return {move: undefined, entropy}; // No valid move found
 			}
 		}
 	}

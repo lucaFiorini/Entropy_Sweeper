@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function doNextMove() {
-		let move = selfPlay.nextMove();
+		let { move } = selfPlay.nextMove();
 		if (move !== undefined) {
 			handleCellClick(move.row, move.col);
 		}

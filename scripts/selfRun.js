@@ -19,86 +19,118 @@ function initGame(rows = 10, cols = 10, mines = 10) {
 
 function solveGame(minesweeper, selfPlay) {
     if (minesweeper.gameOver) {
-        return { result: "aborted", entropy: [] };
+        return { result: "aborted", entropy: [], board: minesweeper.boardToString() };
     }
 
-    const entropyInstance = new EntropyCalculator(minesweeper);
     const startTime = Date.now();
     const TIMEOUT_MS = 10000;
 
-    let entropy = [];
+    let entropyArr = [];
 
     while (!minesweeper.gameOver) {
         if (Date.now() - startTime > TIMEOUT_MS) {
-            return { result: "aborted", entropy };
+            return { result: "aborted", entropyArr, board: minesweeper.boardToString() };
         }
-        let move;
+        let move, entropy;
         try {
-            move = selfPlay.nextMove();
+            let result = selfPlay.nextMove();
+			move = result.move;
+			entropy = result.entropy;
+			entropyArr.push(entropy);
         } catch (error) {
             console.log("Error during self-play move: " + error.message);
-            return { result: "aborted", entropy };
+            return { result: "aborted", entropyArr, board: minesweeper.boardToString() };
         }
         if (!move) {
-            return { result: "aborted", entropy };
+            return { result: "aborted", entropyArr, board: minesweeper.boardToString() };
         }
         minesweeper.revealCell(move.row, move.col);
-		entropyInstance.calculateChains();
-        entropy.push(entropyInstance.calculateEntropy());
     }
 
     if (minesweeper.won) {
-        return { result: "won", entropy };
+        return { result: "won", entropyArr };
     } else if (minesweeper.gameOver) {
-        return { result: "lost", entropy };
+        return { result: "lost", entropyArr };
     }
-    return { result: "aborted", entropy };
+    return { result: "aborted", entropyArr, board: minesweeper.boardToString() };
+}
+
+function appendJSONLine(filename, obj) {
+    fs.appendFileSync(filename, JSON.stringify(obj) + "\n");
+}
+
+function writeRunStats(stats) {
+    // Overwrite the file with all current stats (one line per diff)
+    const lines = Object.entries(stats).map(
+        ([diff, stat]) => JSON.stringify({ diff, stats: stat })
+    );
+    fs.writeFileSync("logs/run_stats.jsonl", lines.join("\n") + "\n");
 }
 
 function main() {
     const diffs = [
-        { name: "Beginner", rows: 9, cols: 9, mines: 10 },
-		{ name: "Intermediate", rows: 16, cols: 16, mines: 40 },
-		{ name: "Expert", rows: 16, cols: 30, mines: 99 }
+        { name: "Intermediate", rows: 16, cols: 16, mines: 40 },
     ];
-    const n_runs = 2;
+    const n_runs = 1000;
     const stats = {};
-    const entropyLog = {};
+
+    // Prepare log files (clear or create)
+    fs.writeFileSync("logs/run_stats.jsonl", "");
+    fs.writeFileSync("logs/entropy_log.jsonl", "");
+    fs.writeFileSync("logs/aborted_boards.jsonl", "");
 
     for (const diff of diffs) {
         console.log(`Starting game with ${diff.rows} rows, ${diff.cols} cols, and ${diff.mines} mines.`);
         let totalTime = 0;
         let won = 0, lost = 0, aborted = 0;
-        entropyLog[diff.name] = [];
         for (let i = 0; i < n_runs; i++) {
+            console.log(`Run ${i + 1} for ${diff.name}`);
             const { minesweeper, selfPlay } = initGame(diff.rows, diff.cols, diff.mines);
             if (!minesweeper || !selfPlay) {
                 aborted++;
-                entropyLog[diff.name].push([]);
+                appendJSONLine("logs/entropy_log.jsonl", { run: i + 1, entropy: [] });
+                appendJSONLine("logs/aborted_boards.jsonl", { run: i + 1, cause: "Initialization failed", board: "Initialization failed" });
+                stats[diff.name] = { won, lost, aborted, avgTime: `${(totalTime / (i + 1)).toFixed(2)} ms` };
+                writeRunStats(stats);
                 continue;
             }
 
             const startTime = Date.now();
-            const { result, entropy } = solveGame(minesweeper, selfPlay);
+            const { result, entropyArr, board } = solveGame(minesweeper, selfPlay);
             const endTime = Date.now();
             totalTime += (endTime - startTime);
 
-            if (result === "won") won++;
-            else if (result === "lost") lost++;
-            else aborted++;
+            // Always save entropy for every run, regardless of result, and include run type
+            appendJSONLine("logs/entropy_log.jsonl", { run: i + 1, type: result, entropy: entropyArr });
 
-            entropyLog[diff.name].push(entropy);
+            if (result === "won") {
+                won++;
+            } else if (result === "lost") {
+                lost++;
+            } else {
+                aborted++;
+                i--; // Decrement i to repeat this run
+                // Determine abort cause
+                let cause = "Unknown";
+                if (Date.now() - startTime > 30000) {
+                    cause = "Timeout";
+                } else if (!board || board === "No board state") {
+                    cause = "No moves left or error";
+                }
+                appendJSONLine("logs/aborted_boards.jsonl", { run: i + 1, cause, board: board || "No board state" });
+            }
+
+            // Update stats and write after each run (overwrite file)
+            stats[diff.name] = { won, lost, aborted, avgTime: `${(totalTime / (i + 1)).toFixed(2)} ms` };
+            writeRunStats(stats);
         }
         console.log(`Average time for ${n_runs} runs: ${(totalTime / n_runs).toFixed(2)} ms`);
         console.log(`Results for ${diff.name}: Won: ${won}, Lost: ${lost}, Aborted: ${aborted}`);
-        stats[diff.name] = { won, lost, aborted, avgTime: (totalTime / n_runs).toFixed(2) };
     }
 
-    // Write stats and entropy to files
-    fs.writeFileSync("logs/run_stats.json", JSON.stringify(stats, null, 2));
-    fs.writeFileSync("logs/entropy_log.json", JSON.stringify(entropyLog, null, 2));
-    console.log("Stats written to run_stats.json");
-    console.log("Entropy log written to entropy_log.json");
+    console.log("Stats written to logs/run_stats.jsonl");
+    console.log("Entropy log written to logs/entropy_log.jsonl");
+    console.log("Aborted boards written to logs/aborted_boards.jsonl");
 }
 
 main();

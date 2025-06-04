@@ -1,5 +1,4 @@
 import Minesweeper from "./minesweeper.js";
-import entropyCalculator from "./entropy/entropyCalculator.js";
 import SelfPlay from "./selfPlay.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -129,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		initGame();
 	});
 
-	resetButton.addEventListener("click", initGame);
 	nextMoveButton.addEventListener("click", doNextMove);
 	initGame();
 });

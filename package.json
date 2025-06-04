@@ -8,7 +8,8 @@
 		"format": "prettier --write .",
 		"build": "webpack --mode production",
 		"start": "webpack serve --mode development --open --port $PORT",
-		"debug": "node --inspect-brk ./node_modules/webpack/bin/webpack.js serve --mode development --open --port $PORT"
+		"debug": "node --inspect-brk ./node_modules/webpack/bin/webpack.js serve --mode development --open --port $PORT",
+		"self-run": "node ./scripts/selfRun.js"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.18.13",

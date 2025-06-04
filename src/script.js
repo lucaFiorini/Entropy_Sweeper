@@ -12,13 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	let cols = 10;
 	let mines = 10;
 	let minesweeper;
-	let entropyCalculatorInstance;
 	let selfPlay;
 
 	function initGame() {
 		try {
 			minesweeper = new Minesweeper(rows, cols, mines);
-			entropyCalculatorInstance = new entropyCalculator(minesweeper);
 			selfPlay = new SelfPlay(minesweeper);
 			renderBoard();
 		} catch (error) {
@@ -62,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			refreshBoard();
 		} else {
 			refreshBoard();
-			entropyCalculatorInstance.calculateEntropy();
 		}
 	}
 

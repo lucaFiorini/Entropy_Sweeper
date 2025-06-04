@@ -1,6 +1,6 @@
 import solver from "logic-solver";
-import Chain from "../chains/Chain";
-import Minesweeper from "../minesweeper";
+import Chain from "../chains/Chain.js";
+import Minesweeper from "../minesweeper.js";
 
 function solveAllSolutions(solverInstance, varNames) {
 	const solutions = [];

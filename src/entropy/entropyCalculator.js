@@ -23,7 +23,7 @@ class EntropyCalculator {
 		this.entropy = 0;
 
 		this.chains.forEach((chain, index) => {
-			const { count: validCount, solutions } = solveChainWithSAT(chain, this.minesweeper);
+			const { count: validCount } = solveChainWithSAT(chain, this.minesweeper);
 			const hiddenTileCount = chain.getHiddenNeighbors(this.minesweeper).length;
 			const entropy = validCount > 0 ? Math.log2(validCount) : 0;
 			if (this.log) {
@@ -36,6 +36,8 @@ class EntropyCalculator {
 		});
 
 		if (this.log) console.log(`\nTotal Entropy: ${this.entropy.toFixed(4)} bits`);
+
+		return this.entropy
 	}
 
 	printChains() {

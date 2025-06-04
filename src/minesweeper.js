@@ -120,8 +120,20 @@ class Minesweeper {
 		}
 	}
 
+	#revealAllCells() {
+		for (let i = 0; i < this.rows; i++) {
+			for (let j = 0; j < this.cols; j++) {
+				if (!this.board[i][j].isFlagged) {
+					this.board[i][j].isRevealed = true;
+				}
+			}
+		}
+	}
+
 	revealCell(row, col) {
-		if (this.won || this.gameOver) return { mineHit: false, revealed: 0 };
+		if (this.won || this.gameOver) {
+			return { mineHit: false, revealed: 0 };
+		}
 		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) {
 			return { mineHit: false, revealed: 0 };
 		}
@@ -167,8 +179,21 @@ class Minesweeper {
 			}
 		}
 
-		if (this.getRemainingMines() <= 0) {
+		let allNonMinesRevealed = true;
+		for (let i = 0; i < this.rows; i++) {
+			for (let j = 0; j < this.cols; j++) {
+				const c = this.board[i][j];
+				if (!c.isMine && !c.isRevealed) {
+					allNonMinesRevealed = false;
+					break;
+				}
+			}
+			if (!allNonMinesRevealed) break;
+		}
+		if (allNonMinesRevealed) {
+			this.gameOver = true;
 			this.won = true;
+			this.#revealAllCells();
 		}
 
 		return { mineHit: false, revealed };
@@ -214,11 +239,6 @@ class Minesweeper {
 		const cell = this.board[row][col];
 		if (cell.isRevealed) return false;
 		cell.isFlagged = !cell.isFlagged;
-		if (cell.isFlagged) {
-			if (this.getRemainingMines() <= 0) {
-				this.won = true;
-			}
-		}
 	}
 
 	/**

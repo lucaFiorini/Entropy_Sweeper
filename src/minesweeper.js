@@ -81,10 +81,16 @@ class Minesweeper {
 	}
 
 	#placeMines() {
+		let possible = [];
+		for (let i = 0; i < this.rows; i++) {
+			for (let j = 0; j < this.cols; j++) {
+				possible.push([i, j]);
+			}
+		}
 		let placedMines = 0;
-		while (placedMines < this.mineCount) {
-			const row = Math.floor(Math.random() * this.rows);
-			const col = Math.floor(Math.random() * this.cols);
+		while (placedMines < this.mineCount && possible.length > 0) {
+			const idx = Math.floor(Math.random() * possible.length);
+			const [row, col] = possible.splice(idx, 1)[0];
 			const cell = this.board[row][col];
 			if (!cell.isMine) {
 				cell.isMine = true;

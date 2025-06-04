@@ -1,4 +1,4 @@
-/** @format */
+/** @module */
 
 class Cell {
 	row = 0;
@@ -52,6 +52,11 @@ class Minesweeper {
 	gameOver = false;
 	won = false;
 
+	/**
+	 * @param {number} r
+	 * @param {number} c
+	 * @param {number} mineCount
+	 */
 	constructor(r, c, mineCount) {
 		if (!Number.isInteger(r) || !Number.isInteger(c) || !Number.isInteger(mineCount) || r <= 0 || c <= 0 || mineCount < 0 || mineCount >= r * c) {
 			throw new Error("Invalid board size or mine count");

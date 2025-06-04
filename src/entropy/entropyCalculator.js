@@ -9,7 +9,7 @@ class EntropyCalculator {
 	minesweeper = null;
 	chains = [];
 
-	constructor(minesweeper) {
+	constructor(minesweeper, log = false) {
 		if (!(minesweeper instanceof Minesweeper)) {
 			throw new Error("Invalid Minesweeper instance provided");
 		}
@@ -19,21 +19,23 @@ class EntropyCalculator {
 
 	calculateEntropy() {
 		this.calculateChains();
-		this.printChains();
+		if (this.log) this.printChains();
 		this.entropy = 0;
 
 		this.chains.forEach((chain, index) => {
 			const { count: validCount, solutions } = solveChainWithSAT(chain, this.minesweeper);
 			const hiddenTileCount = chain.getHiddenNeighbors(this.minesweeper).length;
 			const entropy = validCount > 0 ? Math.log2(validCount) : 0;
-			console.log(`Chain ${index + 1}:`);
-			console.log(`  Hidden tiles: ${hiddenTileCount}`);
-			console.log(`  Valid configurations: ${validCount}`);
-			console.log(`  Entropy (bits): ${entropy.toFixed(4)}`);
+			if (this.log) {
+				console.log(`Chain ${index + 1}:`);
+				console.log(`  Hidden tiles: ${hiddenTileCount}`);
+				console.log(`  Valid configurations: ${validCount}`);
+				console.log(`  Entropy (bits): ${entropy.toFixed(4)}`);
+			}
 			this.entropy += entropy;
 		});
 
-		console.log(`\nTotal Entropy: ${this.entropy.toFixed(4)} bits`);
+		if (this.log) console.log(`\nTotal Entropy: ${this.entropy.toFixed(4)} bits`);
 	}
 
 	printChains() {

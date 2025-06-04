@@ -1,5 +1,3 @@
-/** @format */
-
 import Minesweeper from "./minesweeper.js";
 import entropyCalculator from "./entropy/entropyCalculator.js";
 import SelfPlay from "./selfPlay.js";
@@ -79,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function refreshBoard() {
-		console.clear();
 		for (let row = 0; row < rows; row++) {
 			for (let col = 0; col < cols; col++) {
 				renderCell(row, col);
@@ -108,6 +105,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
+	function doNextMove() {
+		let move = selfPlay.nextMove();
+		if (move !== undefined) {
+			handleCellClick(move.row, move.col);
+		}
+		refreshBoard();
+	}
+
 	function revealAllMines() {
 		for (let i = 0; i < rows; i++) {
 			for (let j = 0; j < cols; j++) {
@@ -128,16 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	resetButton.addEventListener("click", initGame);
-
-	function doNextMove() {
-		let move = selfPlay.nextMove();
-		console.log(move);
-		if (move !== undefined) {
-			minesweeper.revealCell(move.row, move.col);
-		}
-		refreshBoard();
-	}
-
 	nextMoveButton.addEventListener("click", doNextMove);
 	initGame();
 });

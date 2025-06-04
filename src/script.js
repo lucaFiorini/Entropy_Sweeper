@@ -54,18 +54,17 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (minesweeper.gameOver) return;
 
 		const cell = minesweeper.getCell(row, col);
-		if (cell.isFlagged) return;
+		if (cell.isFlagged || cell.isRevealed) return;
 
 		let result = minesweeper.revealCell(row, col);
 
 		if (result.mineHit) {
 			alert("Game Over!");
 			revealAllMines();
-		} else {
-			console.clear();
-			entropyCalculatorInstance.calculateChains();
-			entropyCalculatorInstance.printChains();
 			refreshBoard();
+		} else {
+			refreshBoard();
+			entropyCalculatorInstance.calculateEntropy();
 		}
 	}
 
@@ -80,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function refreshBoard() {
+		console.clear();
 		for (let row = 0; row < rows; row++) {
 			for (let col = 0; col < cols; col++) {
 				renderCell(row, col);
@@ -89,9 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function renderCell(row, col) {
 		const cell = minesweeper.getCell(row, col);
-		const cellElement = document.querySelector(
-			`.cell[data-row="${row}"][data-col="${col}"]`
-		);
+		const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
 
 		if (cell.isRevealed) {
 			cellElement.classList.add("revealed");
@@ -99,8 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				cellElement.classList.add("mine");
 				cellElement.textContent = "*";
 			} else {
-				cellElement.textContent =
-					cell.adjacentMines > 0 ? cell.adjacentMines : "";
+				cellElement.textContent = cell.adjacentMines > 0 ? cell.adjacentMines : "";
 			}
 		} else if (cell.isFlagged) {
 			cellElement.classList.add("flagged");
@@ -135,12 +132,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	function doNextMove() {
 		let move = selfPlay.nextMove();
 		console.log(move);
-		if(move !== undefined){
-			minesweeper.revealCell(move.row,move.col);
+		if (move !== undefined) {
+			minesweeper.revealCell(move.row, move.col);
 		}
 		refreshBoard();
 	}
 
-	nextMoveButton.addEventListener("click",doNextMove);
+	nextMoveButton.addEventListener("click", doNextMove);
 	initGame();
 });

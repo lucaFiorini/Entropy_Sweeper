@@ -1,6 +1,7 @@
 # Entropy_Sweeper
 
-A Minesweeper game with entropy and probability analysis, built with JavaScript and Webpack.
+A Minesweeper game with entropy and probability analysis, built with JavaScript
+and Webpack.
 
 ## Features
 
@@ -19,15 +20,16 @@ A Minesweeper game with entropy and probability analysis, built with JavaScript 
 ### Installation
 
 1. Clone this repository:
-   ```sh
-   git clone <your-repo-url>
-   cd Entropy_Sweeper
-   ```
+
+    ```sh
+    git clone <your-repo-url>
+    cd Entropy_Sweeper
+    ```
 
 2. Install dependencies:
-   ```sh
-   npm install
-   ```
+    ```sh
+    npm install
+    ```
 
 ### Build
 
@@ -49,7 +51,9 @@ npm start
 
 Then open [http://localhost:8080](http://localhost:8080) in your browser.
 
-Alternatively, you can use the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension in VS Code and open `index.html` after running `npm run build`.
+Alternatively, you can use the
+[Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+extension in VS Code and open `index.html` after running `npm run build`.
 
 #### Custom Port
 
@@ -61,20 +65,22 @@ PORT=1234 npm start
 
 ## Usage
 
-- Use the sidebar to set the number of rows, columns, and mines, then click **Start Game**.
+- Use the sidebar to set the number of rows, columns, and mines, then click
+  **Start Game**.
 - Click cells to reveal them, right-click to flag.
 - The "boh" button is for self-play/AI move suggestion (WIP).
-- Entropy and chain information is logged to the browser console after each move.
+- Entropy and chain information is logged to the browser console after each
+  move.
 
 ## Project Structure
 
 - `src/` - Main source code
-  - `minesweeper.js` - Game logic
-  - `entropy/` - Entropy and probability calculation
-  - `chains/` - Chain detection logic
-  - `sat/` - SAT solver integration
-  - `selfPlay.js` - Self-play/AI logic
-  - `script.js` - Main entry point
+    - `minesweeper.js` - Game logic
+    - `entropy/` - Entropy and probability calculation
+    - `chains/` - Chain detection logic
+    - `sat/` - SAT solver integration
+    - `selfPlay.js` - Self-play/AI logic
+    - `script.js` - Main entry point
 - `styles.css` - UI styles
 - `index.html` - Main HTML file
 

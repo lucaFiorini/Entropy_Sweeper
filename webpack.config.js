@@ -39,7 +39,7 @@ module.exports = {
 		host: "localhost",
 		port: process.env.port || 8080,
 		static: {
-			directory: __dirname, // Serve index.html from project root
-		},
+			directory: __dirname // Serve index.html from project root
+		}
 	}
 };

@@ -7,7 +7,8 @@
 		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
 		"format": "prettier --write .",
 		"build": "webpack --mode production",
-		"start": "webpack serve --mode development --open --port $PORT"
+		"start": "webpack serve --mode development --open --port $PORT",
+		"debug": "node --inspect-brk ./node_modules/webpack/bin/webpack.js serve --mode development --open --port $PORT"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.18.13",

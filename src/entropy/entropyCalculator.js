@@ -1,8 +1,7 @@
-// filepath: /Entropy_Sweeper/Entropy_Sweeper/src/entropy/entropyCalculator.js
 /** @format */
 
 import Minesweeper from "../minesweeper.js";
-import countValidStates from "./countValidStates.js";
+import solveChainWithSAT from "../sat/solveChainWithSAT.js";
 import Chain from "../chains/Chain.js";
 
 class EntropyCalculator {
@@ -20,13 +19,13 @@ class EntropyCalculator {
 
 	calculateEntropy() {
 		this.calculateChains();
+		this.printChains();
 		this.entropy = 0;
 
 		this.chains.forEach((chain, index) => {
-			const { validCount, entropy, hiddenTileCount } = countValidStates(
-				chain,
-				this.minesweeper
-			);
+			const { count: validCount, solutions } = solveChainWithSAT(chain, this.minesweeper);
+			const hiddenTileCount = chain.getHiddenNeighbors(this.minesweeper).length;
+			const entropy = validCount > 0 ? Math.log2(validCount) : 0;
 			console.log(`Chain ${index + 1}:`);
 			console.log(`  Hidden tiles: ${hiddenTileCount}`);
 			console.log(`  Valid configurations: ${validCount}`);
@@ -51,106 +50,95 @@ class EntropyCalculator {
 
 	calculateChains() {
 		this.chains = [];
-		const visited = Array.from({ length: this.minesweeper.rows }, () =>
-			Array(this.minesweeper.cols).fill(false)
-		);
+		let visited = Array.from({ length: this.minesweeper.rows }, () => Array(this.minesweeper.cols).fill(false));
 
 		const isClueCell = (cell) => cell.isRevealed && cell.adjacentMines > 0;
 
-		const getHiddenNeighbors = (ci, cj) => {
-			const hidden = [];
-			for (let dx = -1; dx <= 1; dx++) {
-				for (let dy = -1; dy <= 1; dy++) {
-					if (dx === 0 && dy === 0) continue;
-					const ni = ci + dx;
-					const nj = cj + dy;
-					if (
-						ni >= 0 &&
-						ni < this.minesweeper.rows &&
-						nj >= 0 &&
-						nj < this.minesweeper.cols
-					) {
-						const neighbor = this.minesweeper.getCell(ni, nj);
-						if (!neighbor.isRevealed && !neighbor.isFlagged) {
-							hidden.push([ni, nj]);
-						}
-					}
-				}
-			}
-			return hidden;
-		};
-
-		const buildGraphAndTraverse = (start, graph) => {
-			const visitedNodes = new Set();
-			const path = [];
-
-			const dfs = (node) => {
-				const key = `${node[0]},${node[1]}`;
-				if (visitedNodes.has(key)) return;
-				visitedNodes.add(key);
-				path.push({ row: node[0], col: node[1] });
-
-				let neighbors = graph.get(key) || [];
-				for (const neighbor of neighbors) {
-					dfs(neighbor);
-				}
+		const findChainEdge = () => {
+			// Find an element of the chain
+			const edgeCandidate = {
+				cell: this.minesweeper
+					.getBoard()
+					.flat()
+					.find((cell) => !visited[cell.row][cell.col] && isClueCell(cell)),
+				neighbours: []
 			};
 
-			dfs(start);
-			return path;
+			// If no element found, return null
+			if (!edgeCandidate.cell) return null;
+
+			// After finding an element, follow it's neighbours to find an edge
+			let queue = [edgeCandidate.cell];
+
+			while (queue.length > 0) {
+				const currentCell = queue.shift();
+
+				visited[currentCell.row][currentCell.col] = true;
+
+				let neighbors = [];
+
+				for (const [dx, dy] of [
+					[0, 1], // right
+					[1, 0], // down
+					[0, -1], // left
+					[-1, 0] // up
+				]) {
+					const newRow = currentCell.row + dx;
+					const newCol = currentCell.col + dy;
+
+					// Check if the new row and column are within bounds
+					if (newRow < 0 || newRow >= this.minesweeper.rows || newCol < 0 || newCol >= this.minesweeper.cols) {
+						continue;
+					}
+
+					// Get the neighbor cell
+					const neighborCell = this.minesweeper.getCell(newRow, newCol);
+
+					// Skip the neighbor if it's not a clue cell
+					if (!isClueCell(neighborCell)) {
+						continue;
+					}
+
+					// Add the neighbor cell to the neighbors array
+					neighbors.push(neighborCell);
+
+					// If the neighbor cell is not visited add it to the queue
+					if (!visited[newRow][newCol]) {
+						queue.push(neighborCell);
+					}
+				}
+
+				// If the element is the first one, we need to update it
+				if (edgeCandidate.cell === currentCell) {
+					edgeCandidate.neighbours = neighbors;
+				}
+
+				// Check for the number of neighbours and update the element if the new cell has less neighbours (but more than 0)
+				if (neighbors.length < edgeCandidate.neighbours.length && neighbors.length > 0) {
+					edgeCandidate.cell = currentCell;
+					edgeCandidate.neighbours = neighbors;
+				}
+			}
+
+			// Return the clue cell with the fewest clue neighbors (likely edge of chain)
+			return edgeCandidate.cell;
 		};
 
-		for (let i = 0; i < this.minesweeper.rows; i++) {
-			for (let j = 0; j < this.minesweeper.cols; j++) {
-				const cell = this.minesweeper.getCell(i, j);
-				if (isClueCell(cell) && !visited[i][j]) {
-					const graph = new Map();
-					const queue = [[i, j]];
-					visited[i][j] = true;
+		while (true) {
+			const oldVisited = visited.map((row) => row.slice()); // Create a deep copy of visited
+			const edge = findChainEdge();
+			if (!edge) break;
 
-					while (queue.length > 0) {
-						const [ci, cj] = queue.shift();
-						const hiddenNeighbors = getHiddenNeighbors(ci, cj);
+			const chain = new Chain(true);
+			chain.addCell(edge);
+			this.chains.push(chain);
+			chain.expand(this.minesweeper, oldVisited);
 
-						for (const [hi, hj] of hiddenNeighbors) {
-							for (let dx = -1; dx <= 1; dx++) {
-								for (let dy = -1; dy <= 1; dy++) {
-									if (dx === 0 && dy === 0) continue;
-									const ni = hi + dx;
-									const nj = hj + dy;
-									if (
-										ni >= 0 &&
-										ni < this.minesweeper.rows &&
-										nj >= 0 &&
-										nj < this.minesweeper.cols
-									) {
-										const neighbor =
-											this.minesweeper.getCell(ni, nj);
-										if (isClueCell(neighbor)) {
-											if (!graph.has(`${ci},${cj}`))
-												graph.set(`${ci},${cj}`, []);
-											graph
-												.get(`${ci},${cj}`)
-												.push([ni, nj]);
-											if (!visited[ni][nj]) {
-												queue.push([ni, nj]);
-												visited[ni][nj] = true;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
+			visited = Array.from({ length: this.minesweeper.rows }, () => Array(this.minesweeper.cols).fill(false));
 
-					const startNode = [i, j];
-					const chainCells = buildGraphAndTraverse(startNode, graph);
-
-					if (chainCells.length > 0) {
-						const chain = new Chain();
-						chainCells.forEach((cell) => chain.addCell(cell));
-						this.chains.push(chain);
-					}
+			for (const ch of this.chains) {
+				for (const cell of ch.getCells()) {
+					visited[cell.row][cell.col] = true;
 				}
 			}
 		}

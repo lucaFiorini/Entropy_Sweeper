@@ -24,10 +24,7 @@ const sanitizedGlobals = Object.fromEntries(
 
 export default defineConfig([
 	{
-		extends: compat.extends(
-			"eslint:recommended",
-			"plugin:prettier/recommended"
-		),
+		extends: compat.extends("eslint:recommended", "plugin:prettier/recommended"),
 
 		plugins: {
 			prettier
@@ -49,7 +46,8 @@ export default defineConfig([
 					singleQuote: false,
 					arrowParens: "always",
 					endOfLine: "lf",
-					proseWrap: "always"
+					proseWrap: "preserve",
+					printWidth: 500
 				}
 			],
 

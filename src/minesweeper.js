@@ -9,15 +9,7 @@ class Cell {
 	adjacentMines = 0;
 	adjacentCells = 8;
 
-	constructor(
-		row,
-		col,
-		isMine = false,
-		isRevealed = false,
-		isFlagged = false,
-		adjacentMines = 0,
-		adjacentCells = 8
-	) {
+	constructor(row, col, isMine = false, isRevealed = false, isFlagged = false, adjacentMines = 0, adjacentCells = 8) {
 		this.row = row;
 		this.col = col;
 		this.isMine = isMine;
@@ -61,15 +53,7 @@ class Minesweeper {
 	won = false;
 
 	constructor(r, c, mineCount) {
-		if (
-			!Number.isInteger(r) ||
-			!Number.isInteger(c) ||
-			!Number.isInteger(mineCount) ||
-			r <= 0 ||
-			c <= 0 ||
-			mineCount < 0 ||
-			mineCount >= r * c
-		) {
+		if (!Number.isInteger(r) || !Number.isInteger(c) || !Number.isInteger(mineCount) || r <= 0 || c <= 0 || mineCount < 0 || mineCount >= r * c) {
 			throw new Error("Invalid board size or mine count");
 		}
 		this.rows = r;
@@ -115,12 +99,7 @@ class Minesweeper {
 						if (x === 0 && y === 0) continue;
 						const newRow = i + x;
 						const newCol = j + y;
-						if (
-							newRow >= 0 &&
-							newRow < this.rows &&
-							newCol >= 0 &&
-							newCol < this.cols
-						) {
+						if (newRow >= 0 && newRow < this.rows && newCol >= 0 && newCol < this.cols) {
 							if (this.board[newRow][newCol].isMine) count++;
 						}
 					}
@@ -155,12 +134,7 @@ class Minesweeper {
 				if (x === 0 && y === 0) continue;
 				const newRow = row + x;
 				const newCol = col + y;
-				if (
-					newRow >= 0 &&
-					newRow < this.rows &&
-					newCol >= 0 &&
-					newCol < this.cols
-				) {
+				if (newRow >= 0 && newRow < this.rows && newCol >= 0 && newCol < this.cols) {
 					this.board[newRow][newCol].adjacentCells--;
 				}
 			}
@@ -243,8 +217,7 @@ class Minesweeper {
 	 * @returns {Cell}
 	 */
 	getCell(row, col) {
-		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols)
-			return null;
+		if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return null;
 		return this.board[row][col];
 	}
 

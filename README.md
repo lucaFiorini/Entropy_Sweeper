@@ -97,3 +97,10 @@ MIT
 ---
 
 **Note:** For best results, use the latest version of Chrome or Firefox.
+
+## Results Spreadsheets & Documents
+
+You can view the results and analysis in the following documents:
+
+- [Entropy Sweeper Results (Google Spreadsheet)](https://docs.google.com/spreadsheets/d/e/2PACX-1vQunSCbl8YquQkHBHBKw0i_t7SFkFx7OhgRHsWfTdJ_kvpz9yZ4WAjCUcQ01IOi_4dssjH1ZgzAF8oH/pubhtml)
+- [Entropy Sweeper Report (OneDrive Word Document)](https://1drv.ms/w/c/8c61d478f2b9a17a/ERwI0NdP5fRLvKIiIQecapoB0MxD2tqMnBUgr05kM72NwA?e=Rt0viC)
